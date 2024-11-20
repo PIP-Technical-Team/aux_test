@@ -13,7 +13,7 @@ library(pipfun)
 # pipfun::create_new_brach()
 # pipfun::delete_branch()
 
-# ------- Function to create/add files --------- #
+# ------- Function to create/push files to gh --------- #
 
 generate_aux_data <- function(countries  = 200,
                               first_year = 1990,
@@ -41,10 +41,12 @@ generate_aux_data <- function(countries  = 200,
                   100000)  # Random values for the measure (between 1000 and 100000)
   )
   
+  data$value <- round(data$value, 2)
+  
   return(data)
 }
 
-  
+# Function to create csv from data and push to github
 push_file_to_gh <- function(data,
                             repo      = "aux_test", 
                             branch    = "DEV", 
@@ -53,7 +55,7 @@ push_file_to_gh <- function(data,
   
   # Write CSV to a temporary file
   temp_file <- tempfile(fileext = ".csv")
-  on.exit(unlink(temp_file), add = TRUE) # Ensure cleanup of the temp file
+  #on.exit(unlink(temp_file), add = TRUE) # Ensure cleanup of the temp file
   
   write.csv(data, 
             temp_file, 
@@ -75,3 +77,5 @@ push_file_to_gh <- function(data,
     branch = branch
   )
 }
+
+
