@@ -45,34 +45,33 @@ generate_aux_data <- function(countries  = 200,
 }
 
   
-  
 push_file_to_gh <- function(data,
-                            repo   = "aux_test", 
-                            branch = "DEV", 
-                            owner  = "PIP-Technical-Team") {
+                            repo      = "aux_test", 
+                            branch    = "DEV", 
+                            owner     = "PIP-Technical-Team",
+                            file_name = "test_aux_data.csv") {
   
-  # Write CSV to temporary file
+  # Write CSV to a temporary file
   temp_file <- tempfile(fileext = ".csv")
-  write.csv(data, temp_file, row.names = FALSE)
+  on.exit(unlink(temp_file), add = TRUE) # Ensure cleanup of the temp file
   
-  # Read CSV as content
+  write.csv(data, 
+            temp_file, 
+            row.names = FALSE)
+  
+  # Read CSV as raw content
   csv_content <- readBin(temp_file, "raw", file.info(temp_file)$size)
   
   # Upload the CSV to the branch
   gh::gh(
-    "PUT /repos/{owner}/{repo}/contents/{branch}/test_aux_data.csv",
+    "PUT /repos/{owner}/{repo}/contents/{path}",
     owner = owner,
     repo = repo,
-    branch = branch,
-    path = "test_aux_data.csv",
-    message = "Adding fake aux data CSV",
+    path = file_name, 
+    message = sprintf("Adding %s to branch '%s'", 
+                      file_name, 
+                      branch), 
     content = base64enc::base64encode(csv_content),
     branch = branch
   )
-  
-  #message("CSV file added to branch '", branch, "'.")
 }
-
-
-
-
